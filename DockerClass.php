@@ -1,6 +1,9 @@
 <?php
 namespace 'docker';
 class BadFolderLocation{}
+class SecretDoesNotExist{}
+class ConfigDoesNotExist{}
+
 class Docker {
 	private all_docker_secrets;
 	private all_docker_configs:
@@ -26,6 +29,44 @@ class Docker {
 		{
 			throw new BadFolderLocation($e->getMessage());
 		} catch (\Exception $e)
+		{
+			throw new \Exception($e->getMessage());
+		}
+	}
+
+	public function Get_Secret_Value($Secret_To_Get)
+	{
+		try {
+			if(is_set($this->All_Docker_Secrets[$Secret_To_Get]))
+			{
+				return $this->All_Docker_Secrets[$Secret_To_Get];
+			}else
+			{
+				throw new SecretDoesNotExist($Secret_To_Get." does not appear to be a valid secret");
+			}
+		}catch (SecretDoesNotExist $e)
+		{
+			throw new SecretDoesNotExist($e->getMessage());
+		}catch (\Exception $e)
+		{
+			throw new \Exception($e->getMessage());
+		}
+	}
+
+	public function Get_Config_Value($Config_To_Get)
+	{
+		try {
+			if(is_set($this->All_Docker_Configs[$Config_To_Get]))
+			{
+				return $this->All_Docker_Configs[$Config_To_Get];
+			}else
+			{
+				throw new ConfigDoesNotExist($Config_To_Get." does not appear to be a valid config");
+			}
+		}catch (ConfigDoesNotExist $e)
+		{
+			throw new ConfigDoesNotExist($e->getMessage());
+		}catch (\Exception $e)
 		{
 			throw new \Exception($e->getMessage());
 		}
