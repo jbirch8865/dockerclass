@@ -16,6 +16,8 @@ class Docker {
 			{
 				$this->docker_secrets_folder_location = $secrets_folder;
 				$this->docker_configs_folder_location = $configs_folder;
+				$this->Populate_Docker_Secrets();
+				$this->Populate_Docker_Configs();
 			}else
 			{
 				throw new BadFolderLocation("The secret or configs folder location is not a valid location");
@@ -31,12 +33,36 @@ class Docker {
 
 	private function Populate_Docker_Secrets()
 	{
-		$dir = new DirectoryIterator($this->docker_secrets_folder_location);
-		foreach ($dir as $fileinfo) {
-    		if (!$fileinfo->isDot())
+		try {
+			$dir = new DirectoryIterator($this->docker_secrets_folder_location);
+			foreach ($dir as $fileinfo) {
+    			if (!$fileinfo->isDot())
+			{
+				myfile = fopen($fileinfo->getFilename(), "r");
+        			$this->all_docker_secrets[$fileinfo->getFilename()] = fread($myfile,filesize($fileinfo->getFilename()));
+				fclose($myfile);
+    			}
+		} catch (\Exception $e)
 		{
-        		$fileinfo->getFilename();
-    		}
+			throw new \Exception($e->getMessage());
+		}
+	}
+
+	private function Populate_Docker_Configs()
+	{
+		try {
+			$dir = new DirectoryIterator($this->docker_configss_folder_location);
+			foreach ($dir as $fileinfo) {
+    			if (!$fileinfo->isDot())
+			{
+				myfile = fopen($fileinfo->getFilename(), "r");
+        			$this->all_docker_configs[$fileinfo->getFilename()] = fread($myfile,filesize($fileinfo->getFilename()));
+				fclose($myfile);
+    			}
+		} catch (\Exception $e)
+		{
+			throw new \Exception($e->getMessage());
+		}
 	}
 
 	private function Is_This_A_Valid_File_Or_Directory($folder_to_validate)
